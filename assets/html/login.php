@@ -1,11 +1,17 @@
-<!-- login.html -->
+<?php
+
+  include_once("db.php");
+  if(isset($_SESSION["email"])){
+    header("Location: ../../index.php");
+  }
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Login - ChatApp</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
@@ -29,7 +35,7 @@
 
   <div class="form-container">
     <h4 class="mb-3 text-center">Login to ChatApp</h4>
-    <form action="login.php" method="POST">
+    <form action="login_checker.php" method="POST">
       <div class="mb-3">
         <label>Email</label>
         <input type="email" name="email" class="form-control" required>
@@ -42,7 +48,7 @@
     </form>
     <p class="mt-3 text-center">
       Don't have an account?
-      <a href="register.html">Register</a>
+      <a href="register.php">Register</a>
     </p>
   </div>
 
