@@ -20,6 +20,7 @@ if ($row = mysqli_fetch_assoc($result)) {
   <title>NEXCHAT</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="assets/css/style.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 
@@ -42,7 +43,7 @@ if ($row = mysqli_fetch_assoc($result)) {
   <div class="chat-header">
     <button class="menu-btn" id="menuToggle">☰</button>
     <span><?php echo $username; ?></span>
-    <button class="menu-btn popup-trigger" style=" width: 30px ;font-size:25px; border : 1px solid; border-radius:50px">+</button>
+    <button class="menu-btn popup-trigger" id ="add_btn" style=" width: 30px ;font-size:25px; border : 1px solid; border-radius:50px">+</button>
   </div>
 
   <div class="chat-main">
@@ -100,6 +101,8 @@ if ($row = mysqli_fetch_assoc($result)) {
                             '</div></div>';
                     }
                 }
+                // echo $msg;
+                // exit();
 
             }
                 
@@ -114,11 +117,19 @@ if ($row = mysqli_fetch_assoc($result)) {
     </div>
 <?php
 
-  $rec =  $_GET['receiver'];
+          if(isset($_GET['receiver'])){
+            $rec =  $_GET['receiver'];
+          }
+          else{
+            $rec ='';
+          }
+
 ?>
     <div class="chat-box">
       <div class="messages" id="messages">
-        <?php echo $msg; ?>
+        <div id="messageboard">
+          <?php echo $msg; ?>
+        </div>
       </div>
       <form class="chat-input" action="assets/html/post_chat.php" method="POST">
   <input type="text" name="message" id="chatInput" placeholder="Type a message..." required>
@@ -131,44 +142,44 @@ if ($row = mysqli_fetch_assoc($result)) {
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const popup = document.getElementById('popup');
-    const closeBtn = document.getElementById('closePopup');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const openBtns = document.querySelectorAll('.popup-trigger');
-    const sidebar = document.getElementById('sidebar');
-    const toggleBtn = document.getElementById('menuToggle');
+  var popup = document.getElementById('popup');
+  var closeBtn = document.getElementById('closePopup');
+  var cancelBtn = document.getElementById('cancelBtn');
+  var sidebar = document.getElementById('sidebar');
+  var toggleBtn = document.getElementById('menuToggle');
+  var openBtns = document.getElementById("add_btn");
 
-    openBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        popup.style.display = 'flex';
-        document.getElementById('email').focus();
-      });
-    });
+  openBtns.onclick = function(){
+    popup.style.display = 'flex';
+    document.getElementById('email').focus();
+  }
 
-    closeBtn.onclick = cancelBtn.onclick = () => {
-      popup.style.display = 'none';
-    };
+  closeBtn.onclick=function(){
+    popup.style.display = 'none';
+  }
 
-    toggleBtn.addEventListener('click', () => {
-      if (window.innerWidth <= 768) {
-        sidebar.style.display = sidebar.style.display === 'flex' ? 'none' : 'flex';
-      }
-    });
+  cancelBtn.onclick=function(){
+    popup.style.display = 'none';
+  }
 
-    function loadMessages() {
+  toggleBtn.onclick = function () {
+    sidebar.classList.toggle('show-sidebar');
+  };
+
+   function startTimer() {
+    const receiverEmail = new URLSearchParams(window.location.search).get('receiver');
+
+    if (!receiverEmail) return;
+
+    $("#messageboard").load("index.php?ajax=true&receiver=" + receiverEmail, function () {
       const box = document.getElementById('messages');
-      // fetch('')
-      //   .then(response => response.text())
-      //   .then(data => {
-      //     box.innerHTML = data;
-      //     box.scrollTop = box.scrollHeight;
-      //   });
-    }
+      box.scrollTop = box.scrollHeight;
+      setTimeout(startTimer, 1000);
+    });
+  }
 
-    loadMessages();
-    setInterval(loadMessages, 1000);
-  });
+  startTimer();
+
 </script>
 
 </body>

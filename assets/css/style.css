@@ -204,4 +204,11 @@
       .messages {
     max-height: calc(100vh - 111px);
     }
+      #sidebar {
+    display: none;
+  }
+  #sidebar.show-sidebar {
+    display: flex; 
+    flex-direction: column;
+  }
   }
