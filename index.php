@@ -41,17 +41,31 @@ if ($row = mysqli_fetch_assoc($result)) {
 
 <div class="chat-container">
   <div class="chat-header">
-    <button class="menu-btn" id="menuToggle">☰</button>
-    <span><?php echo $username; ?></span>
-    <button class="menu-btn popup-trigger" id ="add_btn" style=" width: 30px ;font-size:25px; border : 1px solid; border-radius:50px">+</button>
+    <div>
+      <button class="menu-btn" id="menuToggle">☰</button>
+    <span style="font-size: 25px;"><B>NEXCHAT</B></span>
+    </div>
+    <?php
+          if (isset($_GET['receiver'])){
+            $friend_email = $_GET['receiver'];
+            $friend_name_sql = "SELECT * FROM `friends_table` WHERE `user_email` = '$email' AND `friend_email`= '$friend_email'";
+            $friend_name_result = mysqli_query($conn,$friend_name_sql);
+            $row = $friend_name_result->fetch_assoc();
+            $friend_name = $row['friend_name'];
+            
+            echo '<span>'.$friend_name .'</span>';
+          }
+        ?>
+    
   </div>
 
   <div class="chat-main">
     <div class="sidebar" id="sidebar">
     <div class="sidebar-content">
-
+<button class="menu-btn popup-trigger" id ="add_btn" style=" width: 30px ;font-size:25px; border : 1px solid; border-radius:50px">+</button>
       <div class="profile-box">
         <img src="assets/html/image.png" alt="User" class="profile-img">
+        
         <p class="username"><?php echo $username; ?></p>
       </div>
       <hr >
@@ -59,7 +73,7 @@ if ($row = mysqli_fetch_assoc($result)) {
 
       <?php
         if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['friend_email'])) {
-          $friends_email =$_GET['friend_email'];
+          $friends_email = $_GET['friend_email'];
           if($friends_email != $email){
             $fetch_sql = "SELECT * FROM `user`  where `email` = '$friends_email'";
             $fetched_result = mysqli_query($conn,$fetch_sql);
@@ -73,6 +87,10 @@ if ($row = mysqli_fetch_assoc($result)) {
               if($count == 0){
                 $insert_friend_email = " INSERT INTO `friends_table`(`Sno`, `user_email`, `friend_email`,`friend_name`) VALUES (NULL,'$email','$friends_email','$friend_name')";
                 mysqli_query($conn,$insert_friend_email);
+                echo "<script>
+                  alert('Friend Added successfully');
+                  window.location.href = 'index.php';
+                  </script>";;
               }
             }
             else{
@@ -82,9 +100,9 @@ if ($row = mysqli_fetch_assoc($result)) {
                   </script>";
             }
           } 
-          else{
+          else if($friends_email == $email){
             echo "<script>
-              alert('you cant add you own id');
+              alert('you can't add you own id');
               window.location.href = 'index.php';
               </script>";
           }    
