@@ -1,9 +1,4 @@
 <?php
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
     include_once("db.php");
 
     $email = $_POST["email"];
@@ -14,11 +9,18 @@ error_reporting(E_ALL);
     $result = mysqli_query($conn,$sql);
     $count = mysqli_num_rows($result);
 
-    if($count == 1)
-    {
+    if($count == 1){
+
         $_SESSION["email"] = $email;
         $_SESSION["user"] = "active";
         header("Location: ../../index.php");
+    }
+    else{
+        echo "<script>
+        alert('User not found');
+        window.location.href = 'login.php';
+    </script>";
+
     }
 
 ?>

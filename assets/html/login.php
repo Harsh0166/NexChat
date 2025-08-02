@@ -2,9 +2,9 @@
 
   include_once("db.php");
   // echo $_SESSION['email'];
-  if(isset($_SESSION["email"])){
-    header("Location: ../../index.php");
-  }
+  // if(isset($_SESSION["email"])){
+  //   header("Location: ../../index.php");
+  // }
 
 ?>
 <!DOCTYPE html>

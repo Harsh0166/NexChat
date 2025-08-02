@@ -2,7 +2,7 @@
 include_once("assets/html/db.php");
 
 $email = $_SESSION["email"];
-if (!isset($_SESSION["user"])) {
+if (!isset($_SESSION["email"])) {
     header("Location: assets/html/login.php");
     exit();
 }
@@ -48,6 +48,13 @@ if ($row = mysqli_fetch_assoc($result)) {
 
   <div class="chat-main">
     <div class="sidebar" id="sidebar">
+    <div class="sidebar-content">
+
+      <div class="profile-box">
+        <img src="assets/html/image.png" alt="User" class="profile-img">
+        <p class="username"><?php echo $username; ?></p>
+      </div>
+      <hr >
       <ul>
 
       <?php
@@ -58,18 +65,29 @@ if ($row = mysqli_fetch_assoc($result)) {
             $fetched_result = mysqli_query($conn,$fetch_sql);
 
             if($row = mysqli_fetch_assoc($fetched_result)){
-            $check_existence = "SELECT * FROM `friends_table` WHERE `user_email`= '$email' &&  `friend_email`= '$friends_email'";
-            $check_existence_result = mysqli_query($conn,$check_existence);
-            $count = mysqli_num_rows($check_existence_result);
+              $friend_name = $row['username'];
+              $check_existence = "SELECT * FROM `friends_table` WHERE `user_email`= '$email' &&  `friend_email`= '$friends_email'";
+              $check_existence_result = mysqli_query($conn,$check_existence);
+              $count = mysqli_num_rows($check_existence_result);
 
-            if($count == 0){
-              $insert_friend_email = " INSERT INTO `friends_table`(`Sno`, `user_email`, `friend_email`) VALUES (NULL,'$email','$friends_email')";
-              mysqli_query($conn,$insert_friend_email);
+              if($count == 0){
+                $insert_friend_email = " INSERT INTO `friends_table`(`Sno`, `user_email`, `friend_email`,`friend_name`) VALUES (NULL,'$email','$friends_email','$friend_name')";
+                mysqli_query($conn,$insert_friend_email);
+              }
             }
-          }
-          }
-         
-          
+            else{
+              echo "<script>
+                  alert('User is not on NEXCHAT invite them');
+                  window.location.href = 'index.php';
+                  </script>";
+            }
+          } 
+          else{
+            echo "<script>
+              alert('you cant add you own id');
+              window.location.href = 'index.php';
+              </script>";
+          }    
         }
 
         $friend_data1 = "SELECT * FROM `friends_table` WHERE `user_email`= '$email'";
@@ -77,42 +95,17 @@ if ($row = mysqli_fetch_assoc($result)) {
 
         while($row1 = mysqli_fetch_assoc($friend_data_result1)){
             $friend_email1 = $row1['friend_email'];
+            $friend_name = $row1['friend_name'];
             echo " <li><a href='index.php?receiver=".$friend_email1."'>".
-            // .$friend_name.
+            $friend_name.
             ' ('.$friend_email1.')'."</a></li>";
-
-          $msg ="";
-          
-            if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['receiver'])){
-              
-              $receiver_mail = $_GET['receiver'];
-              $fetch_msg = "SELECT * FROM `message` WHERE (`sender_email`='$email' AND `receiver_email`='$receiver_mail') OR (`sender_email`='$receiver_mail' AND `receiver_email`='$email')";
-              
-                $fetched_result = mysqli_query($conn, $fetch_msg);
-
-                while ($row = mysqli_fetch_assoc($fetched_result)) {
-                    if ($row["sender_email"] == $_SESSION["email"]) {
-                        $msg.= '<div class="message sent"><div class="bubble">'
-                            .$row["message"] .
-                            '</div></div>';
-                    } else {
-                        $msg.= '<div class="message received"><div class="bubble">'
-                            . $row["message"] .
-                            '</div></div>';
-                    }
-                }
-                // echo $msg;
-                // exit();
-
-            }
                 
-
-
           };
       ?>
       </ul>
-      <form action="assets/html/logout.php" method="POST">
-        <button style="padding:10px; width:100%; margin-top:10px; background:red; color:#fff; border:none;">Logout</button>
+    </div>
+      <form action="assets/html/logout.php" method="POST" class="logout-form">
+        <button>Logout</button>
       </form>
     </div>
 <?php
@@ -128,7 +121,6 @@ if ($row = mysqli_fetch_assoc($result)) {
     <div class="chat-box">
       <div class="messages" id="messages">
         <div id="messageboard">
-          <?php echo $msg; ?>
         </div>
       </div>
       <form class="chat-input" action="assets/html/post_chat.php" method="POST">
@@ -166,19 +158,16 @@ if ($row = mysqli_fetch_assoc($result)) {
     sidebar.classList.toggle('show-sidebar');
   };
 
-   function startTimer() {
-    const receiverEmail = new URLSearchParams(window.location.search).get('receiver');
+  setInterval(() => {
+    fetch("assets/html/load_message.php?receiver=<?php echo $_GET['receiver'] ?? ''; ?>")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("messageboard").innerHTML = html;
+        const messages = document.getElementById("messages");
+        messages.scrollTop = messages.scrollHeight;
+      });
+  }, 100);
 
-    if (!receiverEmail) return;
-
-    $("#messageboard").load("index.php?ajax=true&receiver=" + receiverEmail, function () {
-      const box = document.getElementById('messages');
-      box.scrollTop = box.scrollHeight;
-      setTimeout(startTimer, 1000);
-    });
-  }
-
-  startTimer();
 
 </script>
 
