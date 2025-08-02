@@ -11,7 +11,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Login - ChatApp</title>
+  <title>Login - NEXCHAT</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
@@ -35,7 +35,7 @@
 <body>
 
   <div class="form-container">
-    <h4 class="mb-3 text-center">Login to ChatApp</h4>
+    <h4 class="mb-3 text-center">Login to <B style="font-weight: 800;">NEXCHAT</B></h4>
     <form action="login_checker.php" method="POST">
       <div class="mb-3">
         <label>Email</label>

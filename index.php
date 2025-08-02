@@ -139,6 +139,14 @@ if ($row = mysqli_fetch_assoc($result)) {
     <div class="chat-box">
       <div class="messages" id="messages">
         <div id="messageboard">
+          <?php
+          $msg = "";
+        if (isset($_GET['receiver'])  && !empty($_GET['receiver'])) {
+          echo $msg;
+        } else {
+          echo '<div class="welcome-msg"><h2>Welcome to NEXCHAT</h2><p>Select a friend to start chatting.</p></div>';
+        }
+      ?>
         </div>
       </div>
       <form class="chat-input" action="assets/html/post_chat.php" method="POST">
@@ -176,15 +184,19 @@ if ($row = mysqli_fetch_assoc($result)) {
     sidebar.classList.toggle('show-sidebar');
   };
 
-  setInterval(() => {
-    fetch("assets/html/load_message.php?receiver=<?php echo $_GET['receiver'] ?? ''; ?>")
-      .then(res => res.text())
-      .then(html => {
-        document.getElementById("messageboard").innerHTML = html;
-        const messages = document.getElementById("messages");
-        messages.scrollTop = messages.scrollHeight;
-      });
-  }, 100);
+function loadMessages() {
+  const receiver = new URLSearchParams(window.location.search).get('receiver');
+  if (!receiver) return; // don't fetch if no receiver selected
+
+  fetch('assets/html/load_message.php?receiver=' + receiver)
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById("messageboard").innerHTML = data;
+    });
+}
+
+setInterval(loadMessages, 100);
+
 
 
 </script>
